@@ -37,7 +37,7 @@ namespace DNSUpdate
             PopulateFields();
             if (StartUpdater())
             {
-                ToggleUpdater.Content = "Stop";
+                ToggleUpdater.Content = "Stop updater";
             }
         }
 
@@ -45,7 +45,7 @@ namespace DNSUpdate
         {
             string tipInt = "Not setted";
             if (ctrlSettings.GetSettings().Interval != 0) { tipInt = ctrlSettings.GetSettings().Interval + " m"; }
-            ToolTipInfo.Text = "DNSUpdater 1.0.0.0\n" + "Update interval: " + tipInt;
+            ToolTipInfo.Text = "DNSUpdate\n" + "Update interval: " + tipInt;
         }
 
         private bool StartUpdater()
@@ -202,13 +202,13 @@ namespace DNSUpdate
             if (Timer.IsEnabled)
             {
                 StopUpdater();
-                ToggleUpdater.Content = "Start";
+                ToggleUpdater.Content = "Start updater";
             }
             else
             {
                 if (StartUpdater())
                 {
-                    ToggleUpdater.Content = "Stop";
+                    ToggleUpdater.Content = "Stop updater";
                 }
             }
         }
