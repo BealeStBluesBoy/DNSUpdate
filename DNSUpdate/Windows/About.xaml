@@ -1,0 +1,26 @@
+﻿<Window x:Class="DNSUpdate.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Title="About" Height="200" Width="250">
+    <StackPanel Margin="10">
+        <TextBlock TextWrapping="Wrap">
+            DNSUpdater 1.0.0.0<LineBreak/>
+            Gustavo Cargnelutti - 2018<LineBreak/>
+            <LineBreak/>
+            Costura.Fody 1.6.2<LineBreak/>
+            Fody 2.0.0<LineBreak/>
+            Hardcodet.NotifyIcon.Wpf 1.0.8<LineBreak/>
+            System.Data.SQLite.Core 1.0.108.0<LineBreak/>
+        </TextBlock>
+        <Button Name="Close"
+                Content="OK"
+                Click="Close_Click"
+                HorizontalAlignment="Right"/>
+    </StackPanel>
+</Window>
