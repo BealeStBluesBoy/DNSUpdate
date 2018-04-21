@@ -4,11 +4,13 @@ namespace DNSUpdate
 {
     class ConnectionController
     {
+        WebClient Cliente = new WebClient();
+
         public bool Update(string domain, string token)
         {
             try
             {
-                var Response = new WebClient().DownloadString("https://www.duckdns.org/update?domains=" + domain + "&token=" + token + "&ip=");
+                var Response = Cliente.DownloadString("https://www.duckdns.org/update?domains=" + domain + "&token=" + token + "&ip=");
                 if (Response is string)
                 {
                     return Response == "OK";
@@ -22,7 +24,7 @@ namespace DNSUpdate
         {
             try
             {
-                var ip = new WebClient().DownloadString("http://checkip.amazonaws.com/");
+                var ip = Cliente.DownloadString("http://checkip.amazonaws.com/");
                 if (ip is string)
                 {
                     return ip;
