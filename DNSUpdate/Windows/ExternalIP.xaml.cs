@@ -11,16 +11,22 @@ namespace DNSUpdate
         public ExternalIP()
         {
             InitializeComponent();
+            Copy.IsEnabled = false;
             DisplayIP();
         }
 
         private async void DisplayIP()
         {
             ConnectionController ctrlUpdater = new ConnectionController();
-            IP.Text = await ctrlUpdater.GetExternalIP();
-            if (IP.Text == "No connection!")
+            var tarea = ctrlUpdater.GetExternalIP();
+            if ("No Connection!" == await tarea)
             {
-                Copy.IsEnabled = false;
+                IP.Text = await tarea;
+            }
+            else
+            {
+                IP.Text = await tarea;
+                Copy.IsEnabled = true;
             }
         }
 
