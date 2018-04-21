@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace DNSUpdate
 {
@@ -20,15 +22,12 @@ namespace DNSUpdate
             return false;
         }
 
-        public string GetExternalIP()
+        public async Task<string> GetExternalIP()
         {
             try
             {
-                var ip = Cliente.DownloadString("http://checkip.amazonaws.com/");
-                if (ip is string)
-                {
-                    return ip;
-                }
+                var ip = Task.Run(() => Cliente.DownloadString(new Uri("http://checkip.amazonaws.com/")));
+                return await ip;
             }
             catch { }
             return "No connection!";

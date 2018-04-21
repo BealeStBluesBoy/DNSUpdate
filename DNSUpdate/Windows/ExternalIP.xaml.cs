@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace DNSUpdate
 {
@@ -10,8 +11,13 @@ namespace DNSUpdate
         public ExternalIP()
         {
             InitializeComponent();
+            DisplayIP();
+        }
+
+        private async void DisplayIP()
+        {
             ConnectionController ctrlUpdater = new ConnectionController();
-            IP.Text = ctrlUpdater.GetExternalIP();
+            IP.Text = await ctrlUpdater.GetExternalIP();
             if (IP.Text == "No connection!")
             {
                 Copy.IsEnabled = false;
