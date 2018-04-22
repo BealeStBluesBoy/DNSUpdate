@@ -10,13 +10,13 @@
         Title="About" Height="200" Width="250">
     <StackPanel Margin="10">
         <TextBlock TextWrapping="Wrap">
-            DNSUpdater 1.0.0.0<LineBreak/>
+            DNSUpdate<LineBreak/>
             Gustavo Cargnelutti - 2018<LineBreak/>
             <LineBreak/>
-            Costura.Fody 1.6.2<LineBreak/>
-            Fody 2.0.0<LineBreak/>
-            Hardcodet.NotifyIcon.Wpf 1.0.8<LineBreak/>
-            System.Data.SQLite.Core 1.0.108.0<LineBreak/>
+            Costura.Fody<LineBreak/>
+            Fody<LineBreak/>
+            Hardcodet.NotifyIcon.Wpf<LineBreak/>
+            System.Data.SQLite.Core<LineBreak/>
         </TextBlock>
         <Button Name="Close"
                 Content="OK"
