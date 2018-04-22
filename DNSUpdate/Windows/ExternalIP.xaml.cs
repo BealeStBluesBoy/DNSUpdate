@@ -33,7 +33,7 @@ namespace DNSUpdate
         private void Copy_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(IP.Text);
-            MessageBox.Show("Copied!");
+            MessageBox.Show("Copied!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             Close();
         }
     }
