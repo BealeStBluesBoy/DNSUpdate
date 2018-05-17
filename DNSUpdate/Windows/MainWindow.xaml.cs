@@ -2,6 +2,7 @@
 using DNSUpdate.Controller;
 using Microsoft.Win32;
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -128,7 +129,7 @@ namespace DNSUpdate.Windows
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            Environment.Exit(0);
         }
 
         private void Show_Click(object sender, RoutedEventArgs e)
@@ -137,11 +138,10 @@ namespace DNSUpdate.Windows
             WindowState = WindowState.Normal;
         }
 
-        protected override void OnStateChanged(EventArgs e)
+        protected override void OnClosing(CancelEventArgs e)
         {
-            if (WindowState == WindowState.Minimized)
-                Hide();
-            base.OnStateChanged(e);
+            e.Cancel = true;
+            Hide();
         }
 
         private void UpdateNow_Click(object sender, RoutedEventArgs e)
