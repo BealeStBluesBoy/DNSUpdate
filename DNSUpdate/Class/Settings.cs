@@ -1,4 +1,4 @@
-﻿namespace DNSUpdate
+﻿namespace DNSUpdate.Class
 {
     class Settings
     {

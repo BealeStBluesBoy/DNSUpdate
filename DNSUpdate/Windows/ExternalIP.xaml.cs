@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DNSUpdate.Controller;
 using System.Windows;
 
-namespace DNSUpdate
+namespace DNSUpdate.Windows
 {
     /// <summary>
     /// Lógica de interacción para ExternalIP.xaml

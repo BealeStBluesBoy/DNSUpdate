@@ -3,7 +3,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Windows;
 
-namespace DNSUpdate
+namespace DNSUpdate.Persistence
 {
     abstract class Persistence
     {

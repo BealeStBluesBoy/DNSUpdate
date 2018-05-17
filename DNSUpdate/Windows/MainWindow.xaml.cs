@@ -1,9 +1,11 @@
-﻿using Microsoft.Win32;
+﻿using DNSUpdate.Class;
+using DNSUpdate.Controller;
+using Microsoft.Win32;
 using System;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace DNSUpdate
+namespace DNSUpdate.Windows
 {
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
@@ -21,7 +23,7 @@ namespace DNSUpdate
             InitializeComponent();
             logger.SetupLog();
             if (ctrlSettings.CreateSettings()) { logger.LogEvent("Settings DB setup ok"); }
-            if (ctrlSettings.GetSettings().Domain != "" || ctrlSettings.GetSettings().Token != "" || ctrlSettings.GetSettings().Interval != 0)
+            if (ctrlSettings.GetSettings().Domain != "" && ctrlSettings.GetSettings().Token != "" && ctrlSettings.GetSettings().Interval != 0)
             {
                 Hide();
             }

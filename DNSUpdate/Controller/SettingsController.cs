@@ -1,4 +1,7 @@
-﻿namespace DNSUpdate
+﻿using DNSUpdate.Class;
+using DNSUpdate.Persistence;
+
+namespace DNSUpdate.Controller
 {
     class SettingsController
     {

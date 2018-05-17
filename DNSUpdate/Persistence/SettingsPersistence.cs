@@ -1,7 +1,8 @@
-﻿using System;
+﻿using DNSUpdate.Class;
+using System;
 using System.Data.SQLite;
 
-namespace DNSUpdate
+namespace DNSUpdate.Persistence
 {
     class SettingsPersistence : Persistence
     {
