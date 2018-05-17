@@ -1,5 +1,4 @@
 ﻿using DNSUpdate.Controller;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace DNSUpdate.Windows
