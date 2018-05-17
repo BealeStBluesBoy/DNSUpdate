@@ -3,17 +3,17 @@ using System.IO;
 
 namespace DNSUpdate.Controller
 {
-    class LoggerController
+    static class LoggerController
     {
-        string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DNSUpdate\\DNSUpdate.log");
+        static string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DNSUpdate\\DNSUpdate.log");
 
-        public void SetupLog()
+        public static void SetupLog()
         {
             Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DNSUpdate");
             File.WriteAllText(LogFile, "");
         }
 
-        public void LogEvent(string logEvent)
+        public static void LogEvent(string logEvent)
         {
             File.AppendAllText(LogFile, string.Format("[{0}] {1}{2}", DateTime.Now.ToString(), logEvent, Environment.NewLine));
         }

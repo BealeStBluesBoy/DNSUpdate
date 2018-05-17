@@ -17,8 +17,7 @@ namespace DNSUpdate.Windows
 
         private async void DisplayIP()
         {
-            ConnectionController ctrlUpdater = new ConnectionController();
-            var tarea = ctrlUpdater.GetExternalIP();
+            var tarea = ConnectionController.GetExternalIP();
             if ("No Connection!" == await tarea)
             {
                 IP.Text = await tarea;

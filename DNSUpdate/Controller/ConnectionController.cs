@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace DNSUpdate.Controller
 {
-    class ConnectionController
+    static class ConnectionController
     {
-        public bool Update(string domain, string token)
+        public static bool Update(string domain, string token)
         {
             WebClient Cliente = new WebClient();
             try
@@ -22,7 +22,7 @@ namespace DNSUpdate.Controller
             return false;
         }
 
-        public async Task<string> GetExternalIP()
+        public static async Task<string> GetExternalIP()
         {
             HttpClient Cliente = new HttpClient();
             try

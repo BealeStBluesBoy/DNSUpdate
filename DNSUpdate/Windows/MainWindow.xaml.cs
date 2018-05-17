@@ -13,17 +13,14 @@ namespace DNSUpdate.Windows
     public partial class MainWindow : Window
     {
         DispatcherTimer Timer;
-        SettingsController ctrlSettings = new SettingsController();
-        LoggerController logger = new LoggerController();
-        ConnectionController ctrlConnection = new ConnectionController();
         RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
         public MainWindow()
         {
             InitializeComponent();
-            logger.SetupLog();
-            if (ctrlSettings.CreateSettings()) { logger.LogEvent("Settings DB setup ok"); }
-            if (ctrlSettings.GetSettings().Domain != "" && ctrlSettings.GetSettings().Token != "" && ctrlSettings.GetSettings().Interval != 0)
+            LoggerController.SetupLog();
+            if (SettingsController.CreateSettings()) { LoggerController.LogEvent("Settings DB setup ok"); }
+            if (SettingsController.GetSettings().Domain != "" && SettingsController.GetSettings().Token != "" && SettingsController.GetSettings().Interval != 0)
             {
                 Hide();
             }
@@ -46,13 +43,13 @@ namespace DNSUpdate.Windows
         private void PopulateToolTip()
         {
             string tipInt = "Not setted";
-            if (ctrlSettings.GetSettings().Interval != 0) { tipInt = ctrlSettings.GetSettings().Interval + " m"; }
+            if (SettingsController.GetSettings().Interval != 0) { tipInt = SettingsController.GetSettings().Interval + " m"; }
             ToolTipInfo.Text = "DNSUpdate\n" + "Update interval: " + tipInt;
         }
 
         private bool StartUpdater()
         {
-            Settings settings = ctrlSettings.GetSettings();
+            Settings settings = SettingsController.GetSettings();
             if (settings.Domain != "" && settings.Token != "" && settings.Interval != 0)
             {
                 Timer = new DispatcherTimer
@@ -61,42 +58,42 @@ namespace DNSUpdate.Windows
                 };
                 Timer.Tick += Timer_Tick;
                 Timer.Start();
-                logger.LogEvent("Updater started");
+                LoggerController.LogEvent("Updater started");
                 PopulateToolTip();
-                if (!ctrlConnection.Update(settings.Domain, settings.Token))
+                if (!ConnectionController.Update(settings.Domain, settings.Token))
                 {
-                    logger.LogEvent("No connection or invalid input data when trying to update");
+                    LoggerController.LogEvent("No connection or invalid input data when trying to update");
                 }
                 return true;
             }
             else
             {
-                logger.LogEvent("Can't start updater, invalid input");
+                LoggerController.LogEvent("Can't start updater, invalid input");
                 return false;
             }
         }
 
         private void StopUpdater()
         {
-            if (Timer != null) { logger.LogEvent("Updater stopped"); Timer.Stop(); }
+            if (Timer != null) { LoggerController.LogEvent("Updater stopped"); Timer.Stop(); }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            Settings settings = ctrlSettings.GetSettings();
-            if (!ctrlConnection.Update(settings.Domain, settings.Token))
+            Settings settings = SettingsController.GetSettings();
+            if (!ConnectionController.Update(settings.Domain, settings.Token))
             {
-                logger.LogEvent("No connection when trying to update");
+                LoggerController.LogEvent("No connection when trying to update");
             }
             else
             {
-                logger.LogEvent("Automatic update");
+                LoggerController.LogEvent("Automatic update");
             }
         }
 
         private void PopulateFields()
         {
-            Settings settings = ctrlSettings.GetSettings();
+            Settings settings = SettingsController.GetSettings();
             Domain.Text = settings.Domain;
             Token.Text = settings.Token;
             if (settings.Interval != 0)
@@ -113,9 +110,9 @@ namespace DNSUpdate.Windows
         {
             if ((Domain.Text != "") && (Token.Text != "") && (Interval.Text != ""))
             {
-                if (ctrlSettings.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && ctrlConnection.Update(Domain.Text, Token.Text))
+                if (SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && ConnectionController.Update(Domain.Text, Token.Text))
                 {
-                    logger.LogEvent("Manual update");
+                    LoggerController.LogEvent("Manual update");
                     MessageBox.Show("Update succesful");
                 }
                 else
@@ -131,12 +128,12 @@ namespace DNSUpdate.Windows
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            if (ctrlSettings.ResetSettings())
+            if (SettingsController.ResetSettings())
             {
                 PopulateFields();
-                logger.LogEvent("Reset updater settings");
+                LoggerController.LogEvent("Reset updater settings");
                 StopUpdater();
-                logger.LogEvent("Updater stopped");
+                LoggerController.LogEvent("Updater stopped");
                 MessageBox.Show("Reset succesful, updater stopped");
             }
             else
@@ -164,14 +161,14 @@ namespace DNSUpdate.Windows
 
         private void UpdateNow_Click(object sender, RoutedEventArgs e)
         {
-            Settings settings = ctrlSettings.GetSettings();
-            if (ctrlConnection.Update(settings.Domain, settings.Token))
+            Settings settings = SettingsController.GetSettings();
+            if (ConnectionController.Update(settings.Domain, settings.Token))
             {
-                logger.LogEvent("Manual update");
+                LoggerController.LogEvent("Manual update");
             }
             else
             {
-                logger.LogEvent("Manual update failed");
+                LoggerController.LogEvent("Manual update failed");
             }
         }
 

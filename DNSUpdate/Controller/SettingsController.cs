@@ -3,27 +3,27 @@ using DNSUpdate.Persistence;
 
 namespace DNSUpdate.Controller
 {
-    class SettingsController
+    static class SettingsController
     {
-        public bool CreateSettings()
+        public static bool CreateSettings()
         {
             SettingsPersistence db = new SettingsPersistence();
             return db.Create();
         }
 
-        public Settings GetSettings()
+        public static Settings GetSettings()
         {
             SettingsPersistence db = new SettingsPersistence();
             return db.Select();
         }
 
-        public bool ResetSettings()
+        public static bool ResetSettings()
         {
             SettingsPersistence db = new SettingsPersistence();
             return db.Update("", "", 0);
         }
 
-        public bool SetSettings(string domain, string token, byte interval)
+        public static bool SetSettings(string domain, string token, byte interval)
         {
             SettingsPersistence db = new SettingsPersistence();
             return db.Update(domain, token, interval);
