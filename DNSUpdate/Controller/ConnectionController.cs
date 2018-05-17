@@ -27,8 +27,8 @@ namespace DNSUpdate.Controller
             HttpClient Cliente = new HttpClient();
             try
             {
-                Task<string> ip = Cliente.GetStringAsync(new Uri("http://checkip.amazonaws.com/"));
-                return (await ip).Replace("\n", String.Empty);
+                string ip = await Cliente.GetStringAsync(new Uri("https://checkip.amazonaws.com/"));
+                return ip.Replace("\n", String.Empty);
             }
             catch { }
             return "No Connection!";
