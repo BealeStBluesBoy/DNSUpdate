@@ -28,10 +28,10 @@ namespace DNSUpdate.Controller
             try
             {
                 Task<string> ip = Cliente.GetStringAsync(new Uri("http://checkip.amazonaws.com/"));
-                return await ip;
+                return (await ip).Replace("\n", String.Empty);
             }
             catch { }
-            return "No connection!";
+            return "No Connection!";
         }
     }
 }

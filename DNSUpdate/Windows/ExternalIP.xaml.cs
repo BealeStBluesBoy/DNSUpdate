@@ -1,4 +1,5 @@
 ﻿using DNSUpdate.Controller;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace DNSUpdate.Windows
@@ -17,16 +18,9 @@ namespace DNSUpdate.Windows
 
         private async void DisplayIP()
         {
-            var tarea = ConnectionController.GetExternalIP();
-            if ("No Connection!" == await tarea)
-            {
-                IP.Text = await tarea;
-            }
-            else
-            {
-                IP.Text = await tarea;
-                Copy.IsEnabled = true;
-            }
+            IP.Text = await ConnectionController.GetExternalIP();
+            if ("No Connection!" != IP.Text)
+                Copy.IsEnabled = true;            
         }
 
         private void Copy_Click(object sender, RoutedEventArgs e)
