@@ -135,7 +135,6 @@ namespace DNSUpdate.Windows
         private void Show_Click(object sender, RoutedEventArgs e)
         {
             Show();
-            WindowState = WindowState.Normal;
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -185,6 +184,11 @@ namespace DNSUpdate.Windows
                 if (StartUpdater())
                     ToggleUpdater.Content = "Stop updater";
             }
+        }
+
+        private void TaskbarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            Show();
         }
     }
 }

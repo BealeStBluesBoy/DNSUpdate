@@ -10,7 +10,9 @@
         Title="DuckDNS Updater" Height="175" Width="375">
     <DockPanel Margin="10">
 
-        <tb:TaskbarIcon ToolTipText="DNSUpdate" IconSource="/Resources/ducky_icon.ico">
+        <tb:TaskbarIcon ToolTipText="DNSUpdate"
+                        IconSource="/Resources/ducky_icon.ico"
+                        TrayMouseDoubleClick="TaskbarIcon_TrayMouseDoubleClick">
             <tb:TaskbarIcon.TrayToolTip>
                 <Border
                     Background="White"
@@ -24,8 +26,8 @@
                     <MenuItem Name="Show" Header="Show" Click="Show_Click"/>
                     <MenuItem Name="UpdateNow" Header="Update now" Click="UpdateNow_Click"/>
                     <MenuItem Name="ShowIP" Header="Show external IP" Click="ShowIP_Click"/>
-                    <MenuItem Name="About" Header="About" Click="About_Click"/>
                     <Separator/>
+                    <MenuItem Name="About" Header="About" Click="About_Click"/>
                     <MenuItem Name="Exit" Header="Exit" Click="Exit_Click"/>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
