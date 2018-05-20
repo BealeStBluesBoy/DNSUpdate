@@ -14,9 +14,6 @@ namespace DNSUpdate.Windows
         public MainWindow()
         {
             InitializeComponent();
-            LoggerController.SetupLog();
-            if (SettingsController.CreateSettings())
-                LoggerController.LogEvent("Settings DB setup ok");
             if (SettingsController.GetSettings().Domain != "" && SettingsController.GetSettings().Token != "" && SettingsController.GetSettings().Interval != 0)
             {
                 Hide();
@@ -83,21 +80,18 @@ namespace DNSUpdate.Windows
                 ToggleUpdater.Content = "Save and start";
                 EnableEdition();
             }
+            else if (SettingsController.ResetSettings())
+            {
+                PopulateFields();
+                LoggerController.LogEvent("Wiped updater settings");
+                UpdaterController.StopUpdater();
+                ToggleUpdater.Content = "Save and start";
+                LoggerController.LogEvent("Updater stopped");
+                MessageBox.Show("Wipe succesful, updater stopped");
+            }
             else
             {
-                if (SettingsController.ResetSettings())
-                {
-                    PopulateFields();
-                    LoggerController.LogEvent("Wiped updater settings");
-                    UpdaterController.StopUpdater();
-                    ToggleUpdater.Content = "Save and start";
-                    LoggerController.LogEvent("Updater stopped");
-                    MessageBox.Show("Wipe succesful, updater stopped");
-                }
-                else
-                {
-                    MessageBox.Show("Wipe failed", "Error");
-                }
+                MessageBox.Show("Wipe failed", "Error");
             }
         }
 
@@ -146,17 +140,11 @@ namespace DNSUpdate.Windows
                 UpdaterController.StopUpdater();
                 ToggleUpdater.Content = "Save and start";
             }
-            else
+            else if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" && SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && UpdaterController.StartUpdater())
             {
-                if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" && SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)))
-                {
-                    if (UpdaterController.StartUpdater())
-                    {
-                        ToggleUpdater.Content = "Stop updater";
-                        PopulateToolTip();
-                        DisableEdition();
-                    }
-                }
+                ToggleUpdater.Content = "Stop updater";
+                PopulateToolTip();
+                DisableEdition();
             }
         }
 
