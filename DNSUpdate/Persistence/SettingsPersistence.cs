@@ -4,13 +4,8 @@ using System.Data.SQLite;
 
 namespace DNSUpdate.Persistence
 {
-    class SettingsPersistence : Persistence
+    public class SettingsPersistence : Persistence
     {
-        public SettingsPersistence()
-        {
-            
-        }
-
         public bool Create()
         {
             if (OpenConnection())

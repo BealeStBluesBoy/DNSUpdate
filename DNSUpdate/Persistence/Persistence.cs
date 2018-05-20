@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace DNSUpdate.Persistence
 {
-    abstract class Persistence
+    public abstract class Persistence
     {
         protected SQLiteConnection Connection;
 
