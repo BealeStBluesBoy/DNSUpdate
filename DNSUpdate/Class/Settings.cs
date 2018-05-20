@@ -1,6 +1,6 @@
 ﻿namespace DNSUpdate.Class
 {
-    class Settings
+    public class Settings
     {
         public string Domain { get; }
         public string Token { get; }
