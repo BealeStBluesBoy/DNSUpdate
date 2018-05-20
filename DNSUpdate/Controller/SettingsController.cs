@@ -1,10 +1,13 @@
 ﻿using DNSUpdate.Class;
 using DNSUpdate.Persistence;
+using Microsoft.Win32;
 
 namespace DNSUpdate.Controller
 {
     static class SettingsController
     {
+        private static RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
         public static bool CreateSettings()
         {
             SettingsPersistence db = new SettingsPersistence();
@@ -27,6 +30,21 @@ namespace DNSUpdate.Controller
         {
             SettingsPersistence db = new SettingsPersistence();
             return db.Update(domain, token, interval);
+        }
+
+        public static void SetOnStartup()
+        {
+            rk.SetValue("DNSUpdate", System.IO.Path.GetFullPath(System.Reflection.Assembly.GetExecutingAssembly().Location));
+        }
+
+        public static void UnsetOnStartup()
+        {
+            rk.DeleteValue("DNSUpdate", false);
+        }
+
+        public static bool IsSettedOnStartup()
+        {
+            return rk.GetValue("DNSUpdate") != null;
         }
     }
 }

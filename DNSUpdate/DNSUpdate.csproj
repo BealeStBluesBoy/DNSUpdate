@@ -103,6 +103,7 @@
     <Compile Include="Controller\LoggerController.cs" />
     <Compile Include="Controller\SettingsController.cs" />
     <Compile Include="Controller\ConnectionController.cs" />
+    <Compile Include="Controller\UpdaterController.cs" />
     <Compile Include="Persistence\SettingsPersistence.cs" />
     <Compile Include="Persistence\Persistence.cs" />
     <Compile Include="Windows\About.xaml.cs">

@@ -1,10 +1,8 @@
 ﻿using DNSUpdate.Class;
 using DNSUpdate.Controller;
-using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace DNSUpdate.Windows
 {
@@ -13,9 +11,6 @@ namespace DNSUpdate.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        DispatcherTimer Timer;
-        RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-
         public MainWindow()
         {
             InitializeComponent();
@@ -23,14 +18,17 @@ namespace DNSUpdate.Windows
             if (SettingsController.CreateSettings())
                 LoggerController.LogEvent("Settings DB setup ok");
             if (SettingsController.GetSettings().Domain != "" && SettingsController.GetSettings().Token != "" && SettingsController.GetSettings().Interval != 0)
+            {
                 Hide();
+                PopulateFields();
+                DisableEdition();
+            }
             PopulateToolTip();
-            if (rk.GetValue("DNSUpdate") == null)
-                OnStartup.IsChecked = false;
-            else
+            if (SettingsController.IsSettedOnStartup())
                 OnStartup.IsChecked = true;
-            PopulateFields();
-            if (StartUpdater())
+            else
+                OnStartup.IsChecked = false;
+            if (UpdaterController.StartUpdater())
                 ToggleUpdater.Content = "Stop updater";
         }
 
@@ -40,44 +38,6 @@ namespace DNSUpdate.Windows
             if (SettingsController.GetSettings().Interval != 0)
                 tipInt = SettingsController.GetSettings().Interval + " m";
             ToolTipInfo.Text = "DNSUpdate\n" + "Update interval: " + tipInt;
-        }
-
-        private bool StartUpdater()
-        {
-            Settings settings = SettingsController.GetSettings();
-            if (settings.Domain != "" && settings.Token != "" && settings.Interval != 0)
-            {
-                Timer = new DispatcherTimer
-                {
-                    Interval = TimeSpan.FromMinutes(settings.Interval)
-                };
-                Timer.Tick += Timer_Tick;
-                Timer.Start();
-                LoggerController.LogEvent("Updater started");
-                PopulateToolTip();
-                if (!ConnectionController.Update(settings.Domain, settings.Token))
-                    LoggerController.LogEvent("No connection or invalid input data when trying to update");
-                return true;
-            }
-            else
-            {
-                LoggerController.LogEvent("Can't start updater, invalid input");
-                return false;
-            }
-        }
-
-        private void StopUpdater()
-        {
-            if (Timer != null) { LoggerController.LogEvent("Updater stopped"); Timer.Stop(); }
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            Settings settings = SettingsController.GetSettings();
-            if (!ConnectionController.Update(settings.Domain, settings.Token))
-                LoggerController.LogEvent("No connection when trying to update");
-            else
-                LoggerController.LogEvent("Automatic update");
         }
 
         private void PopulateFields()
@@ -91,39 +51,53 @@ namespace DNSUpdate.Windows
                 Interval.Text = "";
         }
 
-        private void Update_Click(object sender, RoutedEventArgs e)
+        private void EnableEdition()
         {
-            if ((Domain.Text != "") && (Token.Text != "") && (Interval.Text != ""))
+            Domain.IsEnabled = true;
+            Token.IsEnabled = true;
+            Interval.IsEnabled = true;
+            Edit.Content = "Wipe settings";
+        }
+
+        private void DisableEdition()
+        {
+            Domain.IsEnabled = false;
+            Token.IsEnabled = false;
+            Interval.IsEnabled = false;
+            Edit.Content = "Edit settings";
+        }
+
+        private void UpdateNow_Click(object sender, RoutedEventArgs e)
+        {
+            if (UpdaterController.UpdateNow(Domain.Text, Token.Text))
+                MessageBox.Show("Update succesful");
+            else
+                MessageBox.Show("Update unsuccesful");
+        }
+
+        private void Edit_Click(object sender, RoutedEventArgs e)
+        {
+            if (Edit.Content.ToString() == "Edit settings")
             {
-                if (SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && ConnectionController.Update(Domain.Text, Token.Text))
+                UpdaterController.StopUpdater();
+                ToggleUpdater.Content = "Save and start";
+                EnableEdition();
+            }
+            else
+            {
+                if (SettingsController.ResetSettings())
                 {
-                    LoggerController.LogEvent("Manual update");
-                    MessageBox.Show("Update succesful");
+                    PopulateFields();
+                    LoggerController.LogEvent("Wiped updater settings");
+                    UpdaterController.StopUpdater();
+                    ToggleUpdater.Content = "Save and start";
+                    LoggerController.LogEvent("Updater stopped");
+                    MessageBox.Show("Wipe succesful, updater stopped");
                 }
                 else
                 {
-                    MessageBox.Show("Check input data or connection", "Error");
+                    MessageBox.Show("Wipe failed", "Error");
                 }
-            }
-            else
-            {
-                MessageBox.Show("Check input data or connection", "Error");
-            }
-        }
-
-        private void Reset_Click(object sender, RoutedEventArgs e)
-        {
-            if (SettingsController.ResetSettings())
-            {
-                PopulateFields();
-                LoggerController.LogEvent("Reset updater settings");
-                StopUpdater();
-                LoggerController.LogEvent("Updater stopped");
-                MessageBox.Show("Reset succesful, updater stopped");
-            }
-            else
-            {
-                MessageBox.Show("Reset failed", "Error");
             }
         }
 
@@ -143,15 +117,6 @@ namespace DNSUpdate.Windows
             Hide();
         }
 
-        private void UpdateNow_Click(object sender, RoutedEventArgs e)
-        {
-            Settings settings = SettingsController.GetSettings();
-            if (ConnectionController.Update(settings.Domain, settings.Token))
-                LoggerController.LogEvent("Manual update");
-            else
-                LoggerController.LogEvent("Manual update failed");
-        }
-
         private void ShowIP_Click(object sender, RoutedEventArgs e)
         {
             ExternalIP ShowIP = new ExternalIP();
@@ -164,25 +129,34 @@ namespace DNSUpdate.Windows
             AboutInfo.Show();
         }
 
-        private void OnStartup_Click(object sender, RoutedEventArgs e)
+        private void OnStartup_Checked(object sender, RoutedEventArgs e)
         {
-            if (OnStartup.IsChecked == true)
-                rk.SetValue("DNSUpdate", System.IO.Path.GetFullPath(System.Reflection.Assembly.GetExecutingAssembly().Location));
-            else
-                rk.DeleteValue("DNSUpdate", false);
+            SettingsController.SetOnStartup();
+        }
+
+        private void OnStartup_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SettingsController.UnsetOnStartup();
         }
 
         private void ToggleUpdater_Click(object sender, RoutedEventArgs e)
         {
-            if (Timer.IsEnabled)
+            if (UpdaterController.IsRunning())
             {
-                StopUpdater();
-                ToggleUpdater.Content = "Start updater";
+                UpdaterController.StopUpdater();
+                ToggleUpdater.Content = "Save and start";
             }
             else
             {
-                if (StartUpdater())
-                    ToggleUpdater.Content = "Stop updater";
+                if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" && SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)))
+                {
+                    if (UpdaterController.StartUpdater())
+                    {
+                        ToggleUpdater.Content = "Stop updater";
+                        PopulateToolTip();
+                        DisableEdition();
+                    }
+                }
             }
         }
 

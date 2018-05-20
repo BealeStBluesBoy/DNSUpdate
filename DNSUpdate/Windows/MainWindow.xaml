@@ -84,16 +84,16 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <CheckBox Name="OnStartup"
-                      Click="OnStartup_Click"
-                      Grid.Column="0"
+                      Checked="OnStartup_Checked"
+                      Unchecked="OnStartup_Unchecked"                      Grid.Column="0"
                       Grid.Row="1">On startup</CheckBox>
-            <Button Name="Reset"
-                    Content="Wipe settings"
-                    Click="Reset_Click"
+            <Button Name="Edit"
+                    Content="Edit settings"
+                    Click="Edit_Click"
                     Grid.Row="1"
                     Grid.Column="1" />
             <Button Name="Update"
-                    Click="Update_Click"
+                    Click="UpdateNow_Click"
                     Content="Update now"
                     Grid.Column="2"
                     Grid.Row="1" />
