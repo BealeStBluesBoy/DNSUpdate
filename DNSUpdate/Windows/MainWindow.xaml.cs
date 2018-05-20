@@ -26,7 +26,7 @@ namespace DNSUpdate.Windows
             else
                 OnStartup.IsChecked = false;
             if (UpdaterController.StartUpdater())
-                ToggleUpdater.Content = "Stop updater";
+                ToggleUpdater.Content = "Stop";
         }
 
         private void PopulateToolTip()
@@ -54,6 +54,7 @@ namespace DNSUpdate.Windows
             Token.IsEnabled = true;
             Interval.IsEnabled = true;
             Edit.Content = "Wipe settings";
+            Update.Content = "Cancel";
         }
 
         private void DisableEdition()
@@ -62,14 +63,25 @@ namespace DNSUpdate.Windows
             Token.IsEnabled = false;
             Interval.IsEnabled = false;
             Edit.Content = "Edit settings";
+            Update.Content = "Update now";
         }
 
         private void UpdateNow_Click(object sender, RoutedEventArgs e)
         {
-            if (UpdaterController.UpdateNow(Domain.Text, Token.Text))
-                MessageBox.Show("Update succesful");
+            if (Update.Content.ToString() == "Update now")
+            {
+                if (UpdaterController.UpdateNow(Domain.Text, Token.Text))
+                    MessageBox.Show("Update succesful");
+                else
+                    MessageBox.Show("Update unsuccesful");
+            }
             else
-                MessageBox.Show("Update unsuccesful");
+            {
+                PopulateFields();
+                DisableEdition();
+                if (UpdaterController.StartUpdater())
+                    ToggleUpdater.Content = "Stop";
+            }
         }
 
         private void Edit_Click(object sender, RoutedEventArgs e)
@@ -138,11 +150,11 @@ namespace DNSUpdate.Windows
             if (UpdaterController.IsRunning())
             {
                 UpdaterController.StopUpdater();
-                ToggleUpdater.Content = "Save and start";
+                ToggleUpdater.Content = "Start";
             }
             else if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" && SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && UpdaterController.StartUpdater())
             {
-                ToggleUpdater.Content = "Stop updater";
+                ToggleUpdater.Content = "Stop";
                 PopulateToolTip();
                 DisableEdition();
             }
