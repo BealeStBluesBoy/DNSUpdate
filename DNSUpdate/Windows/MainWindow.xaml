@@ -23,7 +23,7 @@
             </tb:TaskbarIcon.TrayToolTip>
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Name="Show" Header="Show" Click="Show_Click"/>
+                    <MenuItem Name="ShowWindow" Header="Show" Click="Show_Click"/>
                     <MenuItem Name="UpdateNow" Header="Update now" Click="UpdateNow_Click"/>
                     <MenuItem Name="ShowIP" Header="Show external IP" Click="ShowIP_Click"/>
                     <Separator/>
