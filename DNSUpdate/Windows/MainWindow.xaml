@@ -85,7 +85,8 @@
             </Grid.RowDefinitions>
             <CheckBox Name="OnStartup"
                       Checked="OnStartup_Checked"
-                      Unchecked="OnStartup_Unchecked"                      Grid.Column="0"
+                      Unchecked="OnStartup_Unchecked"
+                      Grid.Column="0"
                       Grid.Row="1">On startup</CheckBox>
             <Button Name="Edit"
                     Content="Edit settings"
