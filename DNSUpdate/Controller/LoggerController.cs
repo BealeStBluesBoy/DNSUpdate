@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DNSUpdate.Controller
 {
@@ -7,15 +8,20 @@ namespace DNSUpdate.Controller
     {
         static string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DNSUpdate\\DNSUpdate.log");
 
-        public static void SetupLog()
+        public async static void SetupLog()
         {
-            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DNSUpdate");
-            File.WriteAllText(LogFile, "");
+            await Task.Run(() =>
+            {
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DNSUpdate");
+                File.WriteAllText(LogFile, "");
+            });
         }
 
-        public static void LogEvent(string logEvent)
+        public async static void LogEvent(string logEvent)
         {
-            File.AppendAllText(LogFile, string.Format("[{0}] {1}{2}", DateTime.Now.ToString(), logEvent, Environment.NewLine));
+            await Task.Run(() => {
+                File.AppendAllText(LogFile, string.Format("[{0}] {1}{2}", DateTime.Now.ToString(), logEvent, Environment.NewLine));
+            });
         }
     }
 }

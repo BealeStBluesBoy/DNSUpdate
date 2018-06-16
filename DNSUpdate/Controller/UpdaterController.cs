@@ -1,5 +1,6 @@
 ﻿using DNSUpdate.Class;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace DNSUpdate.Controller
@@ -8,7 +9,7 @@ namespace DNSUpdate.Controller
     {
         private static DispatcherTimer Timer;
 
-        public static bool StartUpdater()
+        public async static Task<bool> StartUpdater()
         {
             Settings settings = SettingsController.GetSettings();
             if (settings.Domain != "" && settings.Token != "" && settings.Interval != 0)
@@ -20,7 +21,7 @@ namespace DNSUpdate.Controller
                 Timer.Tick += Timer_Tick;
                 Timer.Start();
                 LoggerController.LogEvent("Updater started");
-                if (!ConnectionController.Update(settings.Domain, settings.Token))
+                if (!await ConnectionController.Update(settings.Domain, settings.Token))
                     LoggerController.LogEvent("No connection or invalid input data when trying to update");
                 return true;
             }
@@ -41,10 +42,10 @@ namespace DNSUpdate.Controller
             return true;
         }
 
-        private static void Timer_Tick(object sender, EventArgs e)
+        private async static void Timer_Tick(object sender, EventArgs e)
         {
             Settings settings = SettingsController.GetSettings();
-            if (!ConnectionController.Update(settings.Domain, settings.Token))
+            if (!await ConnectionController.Update(settings.Domain, settings.Token))
                 LoggerController.LogEvent("No connection when trying to update");
             else
                 LoggerController.LogEvent("Automatic update");
@@ -55,9 +56,9 @@ namespace DNSUpdate.Controller
             return Timer.IsEnabled;
         }
 
-        public static bool UpdateNow(string domain, string token)
+        public async static Task<bool> UpdateNow(string domain, string token)
         {
-            if (domain != "" && token != "" && ConnectionController.Update(domain, token))
+            if (domain != "" && token != "" && await ConnectionController.Update(domain, token))
             {
                 LoggerController.LogEvent("Manual update");
                 return true;

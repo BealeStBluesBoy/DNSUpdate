@@ -14,7 +14,13 @@ namespace DNSUpdate.Windows
         public MainWindow()
         {
             InitializeComponent();
-            if (SettingsController.GetSettings().Domain != "" && SettingsController.GetSettings().Token != "" && SettingsController.GetSettings().Interval != 0)
+            SetupWindow();
+        }
+
+        private async void SetupWindow()
+        {
+            Settings settings = SettingsController.GetSettings();
+            if (settings.Domain != "" && settings.Token != "" && settings.Interval != 0)
             {
                 Hide();
                 PopulateFields();
@@ -25,7 +31,7 @@ namespace DNSUpdate.Windows
                 OnStartup.IsChecked = true;
             else
                 OnStartup.IsChecked = false;
-            if (UpdaterController.StartUpdater())
+            if (await UpdaterController.StartUpdater())
                 ToggleUpdater.Content = "Stop";
         }
 
@@ -66,11 +72,11 @@ namespace DNSUpdate.Windows
             Update.Content = "Update now";
         }
 
-        private void UpdateNow_Click(object sender, RoutedEventArgs e)
+        private async void UpdateNow_Click(object sender, RoutedEventArgs e)
         {
             if (Update.Content.ToString() == "Update now")
             {
-                if (UpdaterController.UpdateNow(Domain.Text, Token.Text))
+                if (await UpdaterController.UpdateNow(Domain.Text, Token.Text))
                     MessageBox.Show("Update succesful");
                 else
                     MessageBox.Show("Update unsuccesful");
@@ -79,7 +85,7 @@ namespace DNSUpdate.Windows
             {
                 PopulateFields();
                 DisableEdition();
-                if (UpdaterController.StartUpdater())
+                if (await UpdaterController.StartUpdater())
                     ToggleUpdater.Content = "Stop";
             }
         }
@@ -145,14 +151,14 @@ namespace DNSUpdate.Windows
             SettingsController.UnsetOnStartup();
         }
 
-        private void ToggleUpdater_Click(object sender, RoutedEventArgs e)
+        private async void ToggleUpdater_Click(object sender, RoutedEventArgs e)
         {
             if (UpdaterController.IsRunning())
             {
                 UpdaterController.StopUpdater();
                 ToggleUpdater.Content = "Start";
             }
-            else if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" && SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && UpdaterController.StartUpdater())
+            else if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" && SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && await UpdaterController.StartUpdater())
             {
                 ToggleUpdater.Content = "Stop";
                 PopulateToolTip();
