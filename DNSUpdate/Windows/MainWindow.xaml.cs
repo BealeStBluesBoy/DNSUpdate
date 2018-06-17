@@ -47,10 +47,9 @@ namespace DNSUpdate.Windows
         {
             Domain.Text = domain;
             Token.Text = token;
+            Interval.Text = "";
             if (interval != 0)
                 Interval.Text = interval.ToString();
-            else
-                Interval.Text = "";
         }
 
         private void EnableEdition()
