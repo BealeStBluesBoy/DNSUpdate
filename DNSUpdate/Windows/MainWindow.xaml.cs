@@ -23,10 +23,10 @@ namespace DNSUpdate.Windows
             if (settings.Domain != "" && settings.Token != "" && settings.Interval != 0)
             {
                 Hide();
-                PopulateFields();
+                PopulateFields(settings.Domain, settings.Token, settings.Interval);
                 DisableEdition();
             }
-            PopulateToolTip();
+            PopulateToolTip(settings.Interval);
             if (SettingsController.IsSettedOnStartup())
                 OnStartup.IsChecked = true;
             else
@@ -35,21 +35,20 @@ namespace DNSUpdate.Windows
                 ToggleUpdater.Content = "Stop";
         }
 
-        private void PopulateToolTip()
+        private void PopulateToolTip(byte interval)
         {
             string tipInt = "Not setted";
-            if (SettingsController.GetSettings().Interval != 0)
-                tipInt = SettingsController.GetSettings().Interval + " m";
+            if (interval != 0)
+                tipInt = interval + " m";
             ToolTipInfo.Text = "DNSUpdate\n" + "Update interval: " + tipInt;
         }
 
-        private void PopulateFields()
+        private void PopulateFields(string domain, string token, byte interval)
         {
-            Settings settings = SettingsController.GetSettings();
-            Domain.Text = settings.Domain;
-            Token.Text = settings.Token;
-            if (settings.Interval != 0)
-                Interval.Text = settings.Interval.ToString();
+            Domain.Text = domain;
+            Token.Text = token;
+            if (interval != 0)
+                Interval.Text = interval.ToString();
             else
                 Interval.Text = "";
         }
@@ -59,8 +58,9 @@ namespace DNSUpdate.Windows
             Domain.IsEnabled = true;
             Token.IsEnabled = true;
             Interval.IsEnabled = true;
-            Edit.Content = "Wipe settings";
             Update.Content = "Cancel";
+            Edit.Visibility = Visibility.Collapsed;
+            Wipe.Visibility = Visibility.Visible;
         }
 
         private void DisableEdition()
@@ -68,8 +68,9 @@ namespace DNSUpdate.Windows
             Domain.IsEnabled = false;
             Token.IsEnabled = false;
             Interval.IsEnabled = false;
-            Edit.Content = "Edit settings";
             Update.Content = "Update now";
+            Edit.Visibility = Visibility.Visible;
+            Wipe.Visibility = Visibility.Collapsed;
         }
 
         private async void UpdateNow_Click(object sender, RoutedEventArgs e)
@@ -83,29 +84,33 @@ namespace DNSUpdate.Windows
             }
             else
             {
-                PopulateFields();
+                Settings settings = SettingsController.GetSettings();
+                PopulateFields(settings.Domain, settings.Token, settings.Interval);
                 DisableEdition();
-                if (await UpdaterController.StartUpdater())
+                if (UpdaterController.IsRunning())
                     ToggleUpdater.Content = "Stop";
+                else
+                    ToggleUpdater.Content = "Start";
             }
         }
 
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
-            if (Edit.Content.ToString() == "Edit settings")
+            ToggleUpdater.Content = "Save";
+            EnableEdition();
+        }
+
+        private void Wipe_Click(object sender, RoutedEventArgs e)
+        {
+            if (SettingsController.ResetSettings())
             {
-                UpdaterController.StopUpdater();
-                ToggleUpdater.Content = "Save and start";
-                EnableEdition();
-            }
-            else if (SettingsController.ResetSettings())
-            {
-                PopulateFields();
+                PopulateFields("", "", 0);
                 LoggerController.LogEvent("Wiped updater settings");
                 UpdaterController.StopUpdater();
                 ToggleUpdater.Content = "Save and start";
                 LoggerController.LogEvent("Updater stopped");
                 MessageBox.Show("Wipe succesful, updater stopped");
+                DisableEdition();
             }
             else
             {
@@ -153,7 +158,7 @@ namespace DNSUpdate.Windows
 
         private async void ToggleUpdater_Click(object sender, RoutedEventArgs e)
         {
-            if (UpdaterController.IsRunning())
+            if (UpdaterController.IsRunning() && ToggleUpdater.Content.ToString() != "Save")
             {
                 UpdaterController.StopUpdater();
                 ToggleUpdater.Content = "Start";
@@ -161,7 +166,7 @@ namespace DNSUpdate.Windows
             else if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" && SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && await UpdaterController.StartUpdater())
             {
                 ToggleUpdater.Content = "Stop";
-                PopulateToolTip();
+                PopulateToolTip(byte.Parse(Interval.Text));
                 DisableEdition();
             }
         }

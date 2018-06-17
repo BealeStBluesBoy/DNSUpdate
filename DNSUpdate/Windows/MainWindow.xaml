@@ -93,6 +93,12 @@
                     Click="Edit_Click"
                     Grid.Row="1"
                     Grid.Column="1" />
+            <Button Name="Wipe"
+                    Content="Wipe settings"
+                    Click="Wipe_Click"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Visibility="Collapsed"/>
             <Button Name="Update"
                     Click="UpdateNow_Click"
                     Content="Update now"
@@ -100,7 +106,7 @@
                     Grid.Row="1" />
             <Button Name="ToggleUpdater"
                     Click="ToggleUpdater_Click"
-                    Content="Start updater"
+                    Content="Start"
                     Grid.Column="3"
                     Grid.Row="1" />
         </Grid>
