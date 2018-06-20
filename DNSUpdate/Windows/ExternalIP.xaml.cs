@@ -28,5 +28,11 @@ namespace DNSUpdate.Windows
             MessageBox.Show("Copied!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             Close();
         }
+
+        private void Retry_Click(object sender, RoutedEventArgs e)
+        {
+            IP.Text = "Waiting connection...";
+            DisplayIP();
+        }
     }
 }
