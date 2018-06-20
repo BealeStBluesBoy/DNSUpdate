@@ -33,6 +33,7 @@
                 Content="Copy"
                 Click="Copy_Click"
                 Grid.Row="2"
-                Grid.Column="2"/>
+                Grid.Column="2"
+                IsEnabled="False"/>
     </Grid>
 </Window>

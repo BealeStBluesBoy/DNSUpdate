@@ -11,7 +11,6 @@ namespace DNSUpdate.Windows
         public ExternalIP()
         {
             InitializeComponent();
-            Copy.IsEnabled = false;
             DisplayIP();
         }
 
@@ -31,6 +30,7 @@ namespace DNSUpdate.Windows
 
         private void Retry_Click(object sender, RoutedEventArgs e)
         {
+            Copy.IsEnabled = false;
             IP.Text = "Waiting connection...";
             DisplayIP();
         }
