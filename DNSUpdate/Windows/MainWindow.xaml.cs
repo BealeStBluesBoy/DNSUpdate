@@ -101,19 +101,22 @@ namespace DNSUpdate.Windows
 
         private void Wipe_Click(object sender, RoutedEventArgs e)
         {
-            if (SettingsController.ResetSettings())
+            if (true)
             {
-                PopulateFields("", "", 0);
-                LoggerController.LogEvent("Wiped updater settings");
-                UpdaterController.StopUpdater();
-                ToggleUpdater.Content = "Save and start";
-                LoggerController.LogEvent("Updater stopped");
-                MessageBox.Show("Wipe succesful, updater stopped");
-                DisableEdition();
-            }
-            else
-            {
-                MessageBox.Show("Wipe failed", "Error");
+                if (SettingsController.ResetSettings())
+                {
+                    PopulateFields("", "", 0);
+                    LoggerController.LogEvent("Wiped updater settings");
+                    UpdaterController.StopUpdater();
+                    ToggleUpdater.Content = "Save and start";
+                    LoggerController.LogEvent("Updater stopped");
+                    MessageBox.Show("Wipe succesful, updater stopped");
+                    DisableEdition();
+                }
+                else
+                {
+                    MessageBox.Show("Wipe failed", "Error");
+                } 
             }
         }
 

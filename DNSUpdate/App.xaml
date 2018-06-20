@@ -13,17 +13,14 @@
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="Height" Value="23"/>
-            <Setter Property="Margin" Value="0 0 0 6"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style TargetType="Label">
             <Setter Property="Padding" Value="0"/>
-            <Setter Property="Margin" Value="0 0 0 6"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style TargetType="ComboBox">
             <Setter Property="Height" Value="23"/>
-            <Setter Property="Margin" Value="0 0 0 6"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
     </Application.Resources>
