@@ -99,7 +99,8 @@
                     Click="Wipe_Click"
                     Grid.Row="1"
                     Grid.Column="1"
-                    Visibility="Collapsed"/>
+                    Visibility="Collapsed"
+                    HorizontalAlignment="Right"/>
             <Button Name="Update"
                     Click="UpdateNow_Click"
                     Content="Update now"
