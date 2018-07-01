@@ -7,22 +7,22 @@ namespace DNSUpdate.Controller
 {
     public static class UpdaterController
     {
-        private static DispatcherTimer Timer;
+        private static DispatcherTimer Timer = new DispatcherTimer();
 
         public async static Task<bool> StartUpdater()
         {
             Settings settings = SettingsController.GetSettings();
             if (settings.Domain != "" && settings.Token != "" && settings.Interval != 0)
             {
-                Timer = new DispatcherTimer
-                {
-                    Interval = TimeSpan.FromMinutes(settings.Interval)
-                };
+                Timer.Interval = TimeSpan.FromMinutes(settings.Interval);
                 Timer.Tick += Timer_Tick;
                 Timer.Start();
                 LoggerController.LogEvent("Updater started");
                 if (!await ConnectionController.Update(settings.Domain, settings.Token))
+                {
                     LoggerController.LogEvent("No connection or invalid input data when trying to update");
+                    return false;
+                }
                 return true;
             }
             else
