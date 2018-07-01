@@ -25,8 +25,8 @@ namespace DNSUpdate.Windows
                 Hide();
                 PopulateFields(settings.Domain, settings.Token, settings.Interval);
                 DisableEdition();
+                PopulateToolTip(settings.Interval);
             }
-            PopulateToolTip(settings.Interval);
             if (SettingsController.IsSettedOnStartup())
                 OnStartup.IsChecked = true;
             else
@@ -52,14 +52,25 @@ namespace DNSUpdate.Windows
                 Interval.Text = interval.ToString();
         }
 
-        private void EnableEdition()
+        private void EnableEdition(bool initialSetup)
         {
             Domain.IsEnabled = true;
             Token.IsEnabled = true;
             Interval.IsEnabled = true;
-            Update.Content = "Cancel";
+            Save.Visibility = Visibility.Visible;
+            Update.Visibility = Visibility.Collapsed;
+            ToggleUpdater.Visibility = Visibility.Collapsed;
             Edit.Visibility = Visibility.Collapsed;
-            Wipe.Visibility = Visibility.Visible;
+            if (initialSetup)
+            {
+                Wipe.Visibility = Visibility.Collapsed;
+                Cancel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Wipe.Visibility = Visibility.Visible;
+                Cancel.Visibility = Visibility.Visible;
+            }
         }
 
         private void DisableEdition()
@@ -67,56 +78,90 @@ namespace DNSUpdate.Windows
             Domain.IsEnabled = false;
             Token.IsEnabled = false;
             Interval.IsEnabled = false;
-            Update.Content = "Update now";
-            Edit.Visibility = Visibility.Visible;
+
             Wipe.Visibility = Visibility.Collapsed;
+            Save.Visibility = Visibility.Collapsed;
+            Cancel.Visibility = Visibility.Collapsed;
+
+            Update.Visibility = Visibility.Visible;
+            ToggleUpdater.Visibility = Visibility.Visible;
+            Edit.Visibility = Visibility.Visible;
         }
 
         private async void UpdateNow_Click(object sender, RoutedEventArgs e)
         {
-            if (Update.Content.ToString() == "Update now")
-            {
-                if (await UpdaterController.UpdateNow(Domain.Text, Token.Text))
-                    MessageBox.Show("Update succesful");
-                else
-                    MessageBox.Show("Update unsuccesful");
-            }
+            if (await UpdaterController.UpdateNow(Domain.Text, Token.Text))
+                MessageBox.Show("Update succesful");
             else
-            {
-                Settings settings = SettingsController.GetSettings();
-                PopulateFields(settings.Domain, settings.Token, settings.Interval);
-                DisableEdition();
-                if (UpdaterController.IsRunning())
-                    ToggleUpdater.Content = "Stop";
-                else
-                    ToggleUpdater.Content = "Start";
-            }
+                MessageBox.Show("Update unsuccesful");
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            Settings settings = SettingsController.GetSettings();
+            PopulateFields(settings.Domain, settings.Token, settings.Interval);
+            DisableEdition();
+            if (UpdaterController.IsRunning())
+                ToggleUpdater.Content = "Stop";
+            else
+                ToggleUpdater.Content = "Start";
         }
 
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
-            ToggleUpdater.Content = "Save";
-            EnableEdition();
+            EnableEdition(false);
         }
 
         private void Wipe_Click(object sender, RoutedEventArgs e)
         {
-            if (true)
+            if (MessageBox.Show("Are you sure?", "Wipe settings",
+                MessageBoxButton.YesNo, MessageBoxImage.Question,
+                MessageBoxResult.No) == MessageBoxResult.Yes)
             {
                 if (SettingsController.ResetSettings())
                 {
+                    EnableEdition(true);
                     PopulateFields("", "", 0);
                     LoggerController.LogEvent("Wiped updater settings");
                     UpdaterController.StopUpdater();
-                    ToggleUpdater.Content = "Save and start";
                     LoggerController.LogEvent("Updater stopped");
                     MessageBox.Show("Wipe succesful, updater stopped");
-                    DisableEdition();
                 }
                 else
                 {
-                    MessageBox.Show("Wipe failed", "Error");
+                    MessageBox.Show("Wipe failed", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 } 
+            }
+        }
+
+        private async void ToggleUpdater_Click(object sender, RoutedEventArgs e)
+        {
+            if (UpdaterController.IsRunning())
+            {
+                UpdaterController.StopUpdater();
+                ToggleUpdater.Content = "Start";
+            }
+            else
+            {
+                await UpdaterController.StartUpdater();
+                ToggleUpdater.Content = "Stop";
+            }
+        }
+
+        private async void Save_Click(object sender, RoutedEventArgs e)
+        {
+            if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" &&
+                SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) &&
+                await UpdaterController.StartUpdater())
+            {
+                ToggleUpdater.Content = "Stop";
+                PopulateToolTip(byte.Parse(Interval.Text));
+                DisableEdition();
+            }
+            else
+            {
+                MessageBox.Show("Complete all fields with valid data!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                SettingsController.ResetSettings();
             }
         }
 
@@ -156,21 +201,6 @@ namespace DNSUpdate.Windows
         private void OnStartup_Unchecked(object sender, RoutedEventArgs e)
         {
             SettingsController.UnsetOnStartup();
-        }
-
-        private async void ToggleUpdater_Click(object sender, RoutedEventArgs e)
-        {
-            if (UpdaterController.IsRunning() && ToggleUpdater.Content.ToString() != "Save")
-            {
-                UpdaterController.StopUpdater();
-                ToggleUpdater.Content = "Start";
-            }
-            else if (Interval.Text != "" && Domain.Text != "" && Token.Text != "" && SettingsController.SetSettings(Domain.Text, Token.Text, byte.Parse(Interval.Text)) && await UpdaterController.StartUpdater())
-            {
-                ToggleUpdater.Content = "Stop";
-                PopulateToolTip(byte.Parse(Interval.Text));
-                DisableEdition();
-            }
         }
 
         private void TaskbarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
